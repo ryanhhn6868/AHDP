@@ -1,7 +1,12 @@
 import React from 'react';
 import { ArrowUp } from 'lucide-react';
+import { NAV_ORDER, PageRoute, ROUTES } from '../utils/routing';
 
-export const Footer: React.FC = () => {
+interface FooterProps {
+  onNavigate: (route: PageRoute) => void;
+}
+
+export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -21,81 +26,74 @@ export const Footer: React.FC = () => {
               </span>
             </div>
 
-            <p className="text-xs font-semibold text-[#345C49] tracking-wider uppercase">
+            <p className="text-xs font-semibold text-[#84B39A] tracking-wider uppercase">
               Smarter Marketing. Better Decisions. Sustainable Growth.
             </p>
 
-            <p className="text-xs text-[#FAF8F5]/70 max-w-sm leading-relaxed">
-              Specialized digital marketing, local SEO, direct booking architecture, and revenue attribution consultancy for independent South Australian dining venues.
+            <p className="text-xs text-[#FAF8F5]/75 max-w-sm leading-relaxed">
+              Independent hospitality marketing Adelaide consultancy supporting local cafés, bistros, and restaurants with local SEO, customer retention, and practical marketing analytics.
             </p>
           </div>
 
           {/* Quick Links */}
           <div className="md:col-span-3 space-y-3">
-            <div className="text-xs font-mono uppercase tracking-wider text-[#345C49]">
+            <div className="text-xs font-mono uppercase tracking-wider text-[#84B39A]">
               Navigation
             </div>
             <ul className="space-y-2 text-xs text-[#FAF8F5]/80">
-              <li>
-                <a href="#services" className="hover:text-[#FAF8F5] transition-colors">
-                  Capabilities & Deliverables
-                </a>
-              </li>
-              <li>
-                <a href="#methodology" className="hover:text-[#FAF8F5] transition-colors">
-                  The 12-Point Audit Framework
-                </a>
-              </li>
-              <li>
-                <a href="#calculator" className="hover:text-[#FAF8F5] transition-colors">
-                  Digital Health Self-Assessment
-                </a>
-              </li>
-              <li>
-                <a href="#about" className="hover:text-[#FAF8F5] transition-colors">
-                  About AHDP & Adelaide Ethos
-                </a>
-              </li>
-              <li>
-                <a href="#contact" className="hover:text-[#FAF8F5] transition-colors">
-                  Request a Digital Audit
-                </a>
-              </li>
+              {NAV_ORDER.map((routeKey) => {
+                const routeInfo = ROUTES[routeKey];
+                return (
+                  <li key={routeKey}>
+                    <a
+                      href={routeInfo.hash}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        onNavigate(routeKey);
+                      }}
+                      className="hover:text-[#FAF8F5] underline-offset-4 hover:underline transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#84B39A] rounded-xs"
+                    >
+                      {routeInfo.label}
+                    </a>
+                  </li>
+                );
+              })}
             </ul>
           </div>
 
           {/* Adelaide Office & Service Footprint */}
           <div className="md:col-span-4 space-y-3">
-            <div className="text-xs font-mono uppercase tracking-wider text-[#345C49]">
-              Practice Footprint
+            <div className="text-xs font-mono uppercase tracking-wider text-[#84B39A]">
+              Adelaide Practice
             </div>
-            <div className="space-y-1 text-xs text-[#FAF8F5]/80">
-              <p className="font-semibold text-[#FAF8F5]">Adelaide Hospitality Digital Partners Pty Ltd</p>
-              <p>Grenfell Street, Adelaide SA 5000</p>
-              <p>Email: audit@ahdp.com.au</p>
-              <p>Direct: (08) 7089 4210</p>
+            <div className="space-y-1.5 text-xs text-[#FAF8F5]/80">
+              <p className="font-semibold text-[#FAF8F5]">Adelaide Hospitality Digital Partners (AHDP)</p>
+              <p>Adelaide, South Australia 5000</p>
+              <p>Enquiries: hello@ahdp-adelaide.example</p>
+              <p>Consultations: Mon – Fri, 9:00am – 5:00pm ACST</p>
             </div>
-            <div className="pt-2 text-[11px] text-[#FAF8F5]/50 leading-relaxed">
-              Serving independent operators across Adelaide CBD, North Adelaide, Norwood, Unley, Glenelg, Bowden, Prospect, Henley Beach, and the Adelaide Hills.
+            <div className="pt-2 text-[11px] text-[#FAF8F5]/60 leading-relaxed">
+              Focused on independent venues across Adelaide CBD, North Adelaide, Norwood, Unley, Glenelg, and the Adelaide Hills.
             </div>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#FAF8F5]/50">
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#FAF8F5]/60">
           <div>
-            &copy; {new Date().getFullYear()} Adelaide Hospitality Digital Partners. All rights reserved. ABN 48 692 814 302.
+            &copy; {new Date().getFullYear()} Adelaide Hospitality Digital Partners (AHDP). Educational assignment concept.
           </div>
 
           <div className="flex items-center gap-6">
-            <span>South Australia, Australia</span>
+            <span>Adelaide, South Australia</span>
             <button
+              type="button"
               onClick={scrollToTop}
-              className="inline-flex items-center gap-1.5 text-xs text-[#FAF8F5]/70 hover:text-[#FAF8F5] transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 text-xs text-[#FAF8F5]/80 hover:text-[#FAF8F5] transition-colors cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#84B39A] rounded-xs"
               aria-label="Back to top"
             >
               <span>Back to Top</span>
-              <ArrowUp className="w-3.5 h-3.5" />
+              <ArrowUp className="w-3.5 h-3.5" aria-hidden="true" />
             </button>
           </div>
         </div>

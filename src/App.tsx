@@ -1,86 +1,88 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Navbar } from './components/Navbar';
-import { Hero } from './components/Hero';
-import { Services } from './components/Services';
-import { AuditFramework } from './components/AuditFramework';
-import { InteractiveAuditEstimator } from './components/InteractiveAuditEstimator';
+import { HomePage } from './components/HomePage';
 import { AboutUs } from './components/AboutUs';
+import { Services } from './components/Services';
+import { SampleAuditPage } from './components/SampleAuditPage';
+import { InsightsPage } from './components/InsightsPage';
 import { ContactSection } from './components/ContactSection';
 import { Footer } from './components/Footer';
+import { PageRoute, ROUTES, parseHashRoute, getRouteHash } from './utils/routing';
+import { trackPageView } from './utils/analytics';
 
 export default function App() {
-  const [preFillData, setPreFillData] = useState<{
-    venueType: string;
-    weeklyCovers: number;
-    challenge: string;
-    notes: string;
-  } | null>(null);
+  const [currentRoute, setCurrentRoute] = useState<PageRoute>(() =>
+    typeof window !== 'undefined' ? parseHashRoute(window.location.hash) : 'home'
+  );
+  const [preFillFocus, setPreFillFocus] = useState<string | null>(null);
 
-  const scrollToContact = () => {
-    const element = document.getElementById('contact');
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+  const navigateTo = useCallback((route: PageRoute) => {
+    const targetHash = getRouteHash(route);
+    if (window.location.hash !== targetHash) {
+      window.location.hash = targetHash;
+    } else {
+      setCurrentRoute(route);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  };
+  }, []);
 
-  const scrollToServices = () => {
-    const element = document.getElementById('services');
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+  // Listen to browser back/forward and manual hash edits / direct refreshes
+  useEffect(() => {
+    const handleHashChange = () => {
+      const nextRoute = parseHashRoute(window.location.hash);
+      setCurrentRoute(nextRoute);
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  // Update SEO document title, meta description, and trigger GA4/GTM page_view on route change
+  useEffect(() => {
+    const meta = ROUTES[currentRoute];
+    document.title = meta.title;
+
+    const descriptionTag = document.querySelector('meta[name="description"]');
+    if (descriptionTag) {
+      descriptionTag.setAttribute('content', meta.description);
     }
-  };
+
+    trackPageView(meta.title, meta.virtualPath);
+  }, [currentRoute]);
 
   const handleSelectServiceForAudit = (serviceName: string) => {
-    setPreFillData((prev) => ({
-      venueType: prev?.venueType || 'Casual or Fine Dining Restaurant',
-      weeklyCovers: prev?.weeklyCovers || 450,
-      challenge: serviceName,
-      notes: `Requested priority focus area from services overview: ${serviceName}`,
-    }));
-    scrollToContact();
-  };
-
-  const handlePreFillFromCalculator = (data: {
-    venueType: string;
-    weeklyCovers: number;
-    challenge: string;
-    notes: string;
-  }) => {
-    setPreFillData(data);
-    scrollToContact();
+    setPreFillFocus(serviceName);
+    navigateTo('contact');
   };
 
   return (
     <div className="min-h-screen bg-[#FAF8F5] text-[#0D1929] flex flex-col font-sans selection:bg-[#345C49]/20">
-      {/* Navigation */}
-      <Navbar onRequestAuditClick={scrollToContact} />
+      {/* Keyboard Skip Link for Accessibility */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:px-4 focus:py-2 focus:bg-[#0D1929] focus:text-[#FAF8F5] focus:rounded-md focus:text-sm focus:font-semibold"
+      >
+        Skip to main content
+      </a>
 
-      {/* Main Content Sections */}
-      <main className="flex-1">
-        {/* Hero Section */}
-        <Hero
-          onRequestAuditClick={scrollToContact}
-          onExploreServicesClick={scrollToServices}
-        />
+      <Navbar currentRoute={currentRoute} onNavigate={navigateTo} />
 
-        {/* Services & Capabilities */}
-        <Services onSelectServiceForAudit={handleSelectServiceForAudit} />
-
-        {/* 12-Point Audit Methodology */}
-        <AuditFramework onRequestAuditClick={scrollToContact} />
-
-        {/* Interactive Self-Assessment & Margin Diagnostic */}
-        <InteractiveAuditEstimator onPreFillAuditRequest={handlePreFillFromCalculator} />
-
-        {/* About Us & Adelaide Hospitality Ethos */}
-        <AboutUs />
-
-        {/* Contact & Audit Request Form */}
-        <ContactSection preFillData={preFillData} />
+      <main id="main-content" className="flex-1" tabIndex={-1}>
+        {currentRoute === 'home' && <HomePage onNavigate={navigateTo} />}
+        {currentRoute === 'about' && <AboutUs onNavigate={navigateTo} />}
+        {currentRoute === 'services' && (
+          <Services
+            onNavigate={navigateTo}
+            onSelectServiceForAudit={handleSelectServiceForAudit}
+          />
+        )}
+        {currentRoute === 'sample-audit' && <SampleAuditPage onNavigate={navigateTo} />}
+        {currentRoute === 'insights' && <InsightsPage onNavigate={navigateTo} />}
+        {currentRoute === 'contact' && <ContactSection preFillFocus={preFillFocus} />}
       </main>
 
-      {/* Footer */}
-      <Footer />
+      <Footer onNavigate={navigateTo} />
     </div>
   );
 }

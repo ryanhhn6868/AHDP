@@ -1,44 +1,44 @@
 import React, { useState, useEffect } from 'react';
-import { Mail, Phone, MapPin, Clock, CheckCircle2, ArrowRight, ShieldCheck, AlertCircle } from 'lucide-react';
+import {
+  Mail,
+  MapPin,
+  Clock,
+  CheckCircle2,
+  ArrowRight,
+  Info,
+  AlertCircle,
+} from 'lucide-react';
 import { validateAuditForm, AuditRequestFormData } from '../utils/auditCalculator';
+import { trackAuditFormDemoSubmit } from '../utils/analytics';
 
 interface ContactSectionProps {
-  preFillData?: {
-    venueType: string;
-    weeklyCovers: number;
-    challenge: string;
-    notes: string;
-  } | null;
+  preFillFocus?: string | null;
 }
 
-export const ContactSection: React.FC<ContactSectionProps> = ({ preFillData }) => {
+export const ContactSection: React.FC<ContactSectionProps> = ({ preFillFocus }) => {
   const [formData, setFormData] = useState<AuditRequestFormData>({
     venueName: '',
     contactName: '',
     email: '',
     phone: '',
     suburb: 'Adelaide CBD',
-    venueType: 'Casual or Fine Dining Restaurant',
-    primaryChallenge: 'Direct Table Bookings & Reduced Aggregator Fees',
+    venueType: 'Café / Specialty Coffee',
+    primaryChallenge: 'Digital Marketing Audit',
     websiteOrInstagram: '',
     notes: '',
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // Sync preFillData if user came from the Interactive Calculator
   useEffect(() => {
-    if (preFillData) {
+    if (preFillFocus) {
       setFormData((prev) => ({
         ...prev,
-        venueType: preFillData.venueType || prev.venueType,
-        primaryChallenge: preFillData.challenge || prev.primaryChallenge,
-        notes: preFillData.notes ? `${prev.notes ? prev.notes + '\n' : ''}${preFillData.notes}` : prev.notes,
+        primaryChallenge: preFillFocus,
       }));
     }
-  }, [preFillData]);
+  }, [preFillFocus]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -63,148 +63,154 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ preFillData }) =
       return;
     }
 
-    setIsSubmitting(true);
-    // Simulate swift local processing
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setIsSubmitted(true);
-    }, 600);
+    trackAuditFormDemoSubmit(formData.venueType, formData.primaryChallenge);
+    setIsSubmitted(true);
+  };
+
+  const resetForm = () => {
+    setIsSubmitted(false);
+    setErrors({});
+    setFormData({
+      venueName: '',
+      contactName: '',
+      email: '',
+      phone: '',
+      suburb: 'Adelaide CBD',
+      venueType: 'Café / Specialty Coffee',
+      primaryChallenge: 'Digital Marketing Audit',
+      websiteOrInstagram: '',
+      notes: '',
+    });
   };
 
   return (
-    <section id="contact" className="py-20 bg-[#F7F4EC] border-b border-[#E8E4DA]">
+    <section className="py-14 lg:py-20 bg-[#F7F4EC] border-b border-[#E8E4DA]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
+        {/* Page Header */}
         <div className="max-w-3xl mb-12">
           <div className="text-xs font-semibold tracking-widest uppercase text-[#345C49] mb-3">
-            Start With Objective Data
+            Contact &amp; Enquiry
           </div>
-          <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#0D1929] tracking-tight text-balance">
-            Request Your Complimentary 12-Point Digital Audit.
-          </h2>
-          <p className="mt-4 text-base sm:text-lg text-[#0D1929]/75 leading-relaxed">
-            Exclusively for independent cafés, bistros, wine bars, and restaurants across Greater Adelaide. We inspect your local search visibility, booking friction, and margin leakage, then provide a detailed diagnostic report within 48 hours.
+          <h1 className="font-serif text-3xl sm:text-5xl font-bold text-[#0D1929] tracking-tight leading-[1.15] text-balance">
+            Request a Digital Audit for Your Adelaide Venue.
+          </h1>
+          <p className="mt-4 text-base sm:text-lg text-[#0D1929]/80 leading-relaxed">
+            Get in touch with Adelaide Hospitality Digital Partners to discuss local SEO, restaurant customer retention, or a structured digital marketing audit for your café or restaurant.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          {/* Left Column: Direct Adelaide Contact & Expectation Setting */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+          {/* Left Column: Contact Details & Consultation Overview */}
           <div className="lg:col-span-5 space-y-6">
             <div className="bg-[#FFFFFF] rounded-xl border border-[#E8E4DA] p-6 sm:p-8 shadow-sm space-y-6">
-              <h3 className="font-serif text-xl font-bold text-[#0D1929]">
-                What Happens Next?
-              </h3>
+              <h2 className="font-serif text-xl font-bold text-[#0D1929]">
+                Contact Information
+              </h2>
 
-              <div className="space-y-4 text-xs sm:text-sm text-[#0D1929]/80">
+              <div className="space-y-4 text-sm text-[#0D1929]/85">
                 <div className="flex items-start gap-3">
-                  <span className="font-mono font-bold text-[#345C49] text-base shrink-0">1.</span>
+                  <MapPin className="w-4 h-4 text-[#345C49] shrink-0 mt-1" aria-hidden="true" />
                   <div>
-                    <span className="font-semibold text-[#0D1929] block">Immediate Intake Confirmation</span>
-                    Our Adelaide team reviews your venue’s Google Maps profile, website, and current booking architecture.
+                    <span className="font-semibold text-[#0D1929] block">Location</span>
+                    <span>Adelaide, South Australia 5000</span>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <span className="font-mono font-bold text-[#345C49] text-base shrink-0">2.</span>
+                  <Mail className="w-4 h-4 text-[#345C49] shrink-0 mt-1" aria-hidden="true" />
                   <div>
-                    <span className="font-semibold text-[#0D1929] block">12-Point Analysis in 48 Hours</span>
-                    We benchmark your venue against Adelaide competitors in your cuisine category and radius.
+                    <span className="font-semibold text-[#0D1929] block">Email</span>
+                    <span>hello@ahdp-adelaide.example</span>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <span className="font-mono font-bold text-[#345C49] text-base shrink-0">3.</span>
+                  <Clock className="w-4 h-4 text-[#345C49] shrink-0 mt-1" aria-hidden="true" />
                   <div>
-                    <span className="font-semibold text-[#0D1929] block">30-Minute Debrief Consultation</span>
-                    We walk you through the exact findings in person (in Adelaide) or via video call. Zero sales pressure.
+                    <span className="font-semibold text-[#0D1929] block">Consultation Hours</span>
+                    <span>Monday – Friday, 9:00am – 5:00pm ACST</span>
                   </div>
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-[#E8E4DA] space-y-3">
-                <div className="text-xs font-mono uppercase tracking-wider text-[#345C49]">
-                  Direct Practice Inquiries
-                </div>
-
-                <div className="flex items-center gap-3 text-xs sm:text-sm text-[#0D1929]/85">
-                  <MapPin className="w-4 h-4 text-[#345C49] shrink-0" />
-                  <span>Grenfell Street, Adelaide SA 5000</span>
-                </div>
-
-                <div className="flex items-center gap-3 text-xs sm:text-sm text-[#0D1929]/85">
-                  <Phone className="w-4 h-4 text-[#345C49] shrink-0" />
-                  <span className="font-mono tabular-nums">(08) 7089 4210</span>
-                </div>
-
-                <div className="flex items-center gap-3 text-xs sm:text-sm text-[#0D1929]/85">
-                  <Mail className="w-4 h-4 text-[#345C49] shrink-0" />
-                  <span>audit@ahdp.com.au</span>
-                </div>
-
-                <div className="flex items-center gap-3 text-xs sm:text-sm text-[#0D1929]/85">
-                  <Clock className="w-4 h-4 text-[#345C49] shrink-0" />
-                  <span>Mon – Fri, 8:30am – 5:30pm ACST</span>
-                </div>
+              <div className="pt-5 border-t border-[#E8E4DA] space-y-2">
+                <h3 className="text-xs font-mono uppercase tracking-wider text-[#345C49]">
+                  What an Audit Covers
+                </h3>
+                <ul className="space-y-1.5 text-xs sm:text-sm text-[#0D1929]/80">
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#345C49] font-bold" aria-hidden="true">·</span>
+                    <span>Google Business Profile &amp; Adelaide local search review</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#345C49] font-bold" aria-hidden="true">·</span>
+                    <span>Mobile website clarity, menu usability &amp; booking paths</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#345C49] font-bold" aria-hidden="true">·</span>
+                    <span>Guest retention touchpoints &amp; GA4 analytics readiness</span>
+                  </li>
+                </ul>
               </div>
             </div>
 
-            {/* Privacy & Professional Commitment */}
-            <div className="p-4 rounded-lg bg-[#FAF8F5] border border-[#E8E4DA] flex items-center gap-3 text-xs text-[#0D1929]/75">
-              <ShieldCheck className="w-5 h-5 text-[#345C49] shrink-0" />
-              <span>We never share your venue’s sales or customer data. 100% confidential under Australian privacy standards.</span>
+            {/* Honest Demonstration Notice */}
+            <div className="p-4 rounded-lg bg-[#FAF8F5] border border-[#E8E4DA] flex items-start gap-3 text-xs text-[#0D1929]/80 leading-relaxed">
+              <Info className="w-4 h-4 text-[#345C49] shrink-0 mt-0.5" aria-hidden="true" />
+              <span>
+                <strong>Assignment Demonstration Form:</strong> No external email server or backend database is connected to this static site. Submitting validates your inputs locally and shows a preview confirmation.
+              </span>
             </div>
           </div>
 
-          {/* Right Column: The Audit Request Form */}
+          {/* Right Column: Simple Digital Audit Enquiry Form */}
           <div className="lg:col-span-7 bg-[#FFFFFF] rounded-xl border border-[#E8E4DA] p-6 sm:p-8 shadow-sm">
             {isSubmitted ? (
-              <div className="py-8 text-center space-y-4">
-                <div className="w-14 h-14 rounded-full bg-[#EAF1ED] text-[#345C49] mx-auto flex items-center justify-center">
-                  <CheckCircle2 className="w-8 h-8" />
+              <div className="py-6 space-y-5" role="status" aria-live="polite">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-full bg-[#EAF1ED] text-[#345C49] flex items-center justify-center shrink-0">
+                    <CheckCircle2 className="w-6 h-6" aria-hidden="true" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-mono uppercase tracking-wider text-[#345C49] block">
+                      Demonstration Preview
+                    </span>
+                    <h2 className="font-serif text-2xl font-bold text-[#0D1929]">
+                      Enquiry Validated (Demo Only)
+                    </h2>
+                  </div>
                 </div>
-                <h3 className="font-serif text-2xl font-bold text-[#0D1929]">
-                  Audit Request Received for {formData.venueName}
-                </h3>
-                <p className="text-sm text-[#0D1929]/80 max-w-md mx-auto leading-relaxed">
-                  Thank you, <strong className="text-[#0D1929]">{formData.contactName}</strong>. Our hospitality analytics specialist has received your request and will prepare your venue’s 12-point diagnostic within 48 business hours.
+
+                <p className="text-sm text-[#0D1929]/80 leading-relaxed">
+                  Thank you, <strong className="text-[#0D1929]">{formData.contactName}</strong>. Your enquiry details for <strong className="text-[#0D1929]">{formData.venueName}</strong> passed form validation. Because this is a static university prototype with no live mail server configured, no data has been transmitted or stored externally.
                 </p>
-                <div className="p-4 bg-[#F7F4EC] rounded-lg max-w-md mx-auto text-xs text-left text-[#0D1929]/80 space-y-1 font-mono">
-                  <div>CONFIRMATION · AHDP-AUDIT-2026</div>
-                  <div>EMAIL SENT TO: {formData.email}</div>
-                  <div>PHONE: {formData.phone}</div>
-                  <div>PRECINCT: {formData.suburb}</div>
+
+                <div className="p-4 bg-[#F7F4EC] border border-[#E8E4DA] rounded-lg text-xs text-[#0D1929]/85 space-y-1.5 font-mono">
+                  <div>VENUE: {formData.venueName}</div>
+                  <div>CONTACT: {formData.contactName} ({formData.email})</div>
+                  <div>SUBURB: {formData.suburb}</div>
+                  <div>VENUE TYPE: {formData.venueType}</div>
+                  <div>FOCUS AREA: {formData.primaryChallenge}</div>
                 </div>
-                <div className="pt-4">
+
+                <div className="pt-2">
                   <button
                     type="button"
-                    onClick={() => {
-                      setIsSubmitted(false);
-                      setFormData({
-                        venueName: '',
-                        contactName: '',
-                        email: '',
-                        phone: '',
-                        suburb: 'Adelaide CBD',
-                        venueType: 'Casual or Fine Dining Restaurant',
-                        primaryChallenge: 'Direct Table Bookings & Reduced Aggregator Fees',
-                        websiteOrInstagram: '',
-                        notes: '',
-                      });
-                    }}
-                    className="inline-flex items-center gap-2 px-5 py-2 text-xs font-semibold text-[#0D1929] bg-[#F7F4EC] hover:bg-[#EFECE3] border border-[#E8E4DA] rounded-md transition-colors cursor-pointer"
+                    onClick={resetForm}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-semibold text-[#0D1929] bg-[#F7F4EC] hover:bg-[#EFECE3] border border-[#E8E4DA] rounded-md transition-colors cursor-pointer"
                   >
-                    Submit Another Inquiry
+                    Reset Demonstration Form
                   </button>
                 </div>
               </div>
             ) : (
               <form onSubmit={handleSubmit} noValidate className="space-y-4">
                 <div className="border-b border-[#E8E4DA] pb-3 mb-4">
-                  <h3 className="font-serif text-xl font-bold text-[#0D1929]">
-                    Venue & Contact Information
-                  </h3>
-                  <p className="text-xs text-[#0D1929]/60 mt-0.5">
-                    Please provide accurate operational details for your Adelaide business.
+                  <h2 className="font-serif text-xl font-bold text-[#0D1929]">
+                    Digital Audit Enquiry Form (Demonstration)
+                  </h2>
+                  <p className="text-xs text-[#0D1929]/65 mt-1">
+                    Fields marked with <span className="text-red-600">*</span> are required. Inputs are validated in your browser.
                   </p>
                 </div>
 
@@ -212,7 +218,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ preFillData }) =
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="venueName" className="block text-xs font-semibold text-[#0D1929] mb-1">
-                      Venue / Business Name <span className="text-red-500">*</span>
+                      Venue Name <span className="text-red-600">*</span>
                     </label>
                     <input
                       type="text"
@@ -220,22 +226,25 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ preFillData }) =
                       name="venueName"
                       value={formData.venueName}
                       onChange={handleChange}
-                      placeholder="e.g. Leigh Street Wine Room"
+                      placeholder="e.g. Norwood Corner Café"
+                      aria-invalid={Boolean(errors.venueName)}
+                      aria-describedby={errors.venueName ? 'venueName-error' : undefined}
                       className={`w-full px-3.5 py-2.5 text-sm rounded-md border ${
-                        errors.venueName ? 'border-red-500 bg-red-50/20' : 'border-[#E8E4DA] bg-[#FAF8F5]'
-                      } text-[#0D1929] focus:outline-none focus:ring-2 focus:ring-[#345C49]/40`}
+                        errors.venueName ? 'border-red-600 bg-red-50/30' : 'border-[#E8E4DA] bg-[#FAF8F5]'
+                      } text-[#0D1929] focus:outline-none focus:ring-2 focus:ring-[#345C49]/50`}
                       required
                     />
                     {errors.venueName && (
-                      <p className="text-[11px] text-red-600 mt-1 flex items-center gap-1">
-                        <AlertCircle className="w-3 h-3" /> {errors.venueName}
+                      <p id="venueName-error" className="text-xs text-red-700 mt-1 flex items-center gap-1">
+                        <AlertCircle className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+                        <span>{errors.venueName}</span>
                       </p>
                     )}
                   </div>
 
                   <div>
                     <label htmlFor="contactName" className="block text-xs font-semibold text-[#0D1929] mb-1">
-                      Your Name & Title <span className="text-red-500">*</span>
+                      Your Name <span className="text-red-600">*</span>
                     </label>
                     <input
                       type="text"
@@ -243,15 +252,18 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ preFillData }) =
                       name="contactName"
                       value={formData.contactName}
                       onChange={handleChange}
-                      placeholder="e.g. Marcus Hughes (Owner / GM)"
+                      placeholder="e.g. Jordan Lee"
+                      aria-invalid={Boolean(errors.contactName)}
+                      aria-describedby={errors.contactName ? 'contactName-error' : undefined}
                       className={`w-full px-3.5 py-2.5 text-sm rounded-md border ${
-                        errors.contactName ? 'border-red-500 bg-red-50/20' : 'border-[#E8E4DA] bg-[#FAF8F5]'
-                      } text-[#0D1929] focus:outline-none focus:ring-2 focus:ring-[#345C49]/40`}
+                        errors.contactName ? 'border-red-600 bg-red-50/30' : 'border-[#E8E4DA] bg-[#FAF8F5]'
+                      } text-[#0D1929] focus:outline-none focus:ring-2 focus:ring-[#345C49]/50`}
                       required
                     />
                     {errors.contactName && (
-                      <p className="text-[11px] text-red-600 mt-1 flex items-center gap-1">
-                        <AlertCircle className="w-3 h-3" /> {errors.contactName}
+                      <p id="contactName-error" className="text-xs text-red-700 mt-1 flex items-center gap-1">
+                        <AlertCircle className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+                        <span>{errors.contactName}</span>
                       </p>
                     )}
                   </div>
@@ -261,7 +273,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ preFillData }) =
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="email" className="block text-xs font-semibold text-[#0D1929] mb-1">
-                      Business Email <span className="text-red-500">*</span>
+                      Email Address <span className="text-red-600">*</span>
                     </label>
                     <input
                       type="email"
@@ -269,22 +281,25 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ preFillData }) =
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
-                      placeholder="marcus@venue.com.au"
+                      placeholder="jordan@venue.example"
+                      aria-invalid={Boolean(errors.email)}
+                      aria-describedby={errors.email ? 'email-error' : undefined}
                       className={`w-full px-3.5 py-2.5 text-sm rounded-md border ${
-                        errors.email ? 'border-red-500 bg-red-50/20' : 'border-[#E8E4DA] bg-[#FAF8F5]'
-                      } text-[#0D1929] focus:outline-none focus:ring-2 focus:ring-[#345C49]/40`}
+                        errors.email ? 'border-red-600 bg-red-50/30' : 'border-[#E8E4DA] bg-[#FAF8F5]'
+                      } text-[#0D1929] focus:outline-none focus:ring-2 focus:ring-[#345C49]/50`}
                       required
                     />
                     {errors.email && (
-                      <p className="text-[11px] text-red-600 mt-1 flex items-center gap-1">
-                        <AlertCircle className="w-3 h-3" /> {errors.email}
+                      <p id="email-error" className="text-xs text-red-700 mt-1 flex items-center gap-1">
+                        <AlertCircle className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+                        <span>{errors.email}</span>
                       </p>
                     )}
                   </div>
 
                   <div>
                     <label htmlFor="phone" className="block text-xs font-semibold text-[#0D1929] mb-1">
-                      Phone Number <span className="text-red-500">*</span>
+                      Phone Number (Optional)
                     </label>
                     <input
                       type="tel"
@@ -292,15 +307,17 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ preFillData }) =
                       name="phone"
                       value={formData.phone}
                       onChange={handleChange}
-                      placeholder="0412 345 678 or (08) 8231 ..."
+                      placeholder="e.g. 0412 345 678"
+                      aria-invalid={Boolean(errors.phone)}
+                      aria-describedby={errors.phone ? 'phone-error' : undefined}
                       className={`w-full px-3.5 py-2.5 text-sm rounded-md border ${
-                        errors.phone ? 'border-red-500 bg-red-50/20' : 'border-[#E8E4DA] bg-[#FAF8F5]'
-                      } text-[#0D1929] focus:outline-none focus:ring-2 focus:ring-[#345C49]/40`}
-                      required
+                        errors.phone ? 'border-red-600 bg-red-50/30' : 'border-[#E8E4DA] bg-[#FAF8F5]'
+                      } text-[#0D1929] focus:outline-none focus:ring-2 focus:ring-[#345C49]/50`}
                     />
                     {errors.phone && (
-                      <p className="text-[11px] text-red-600 mt-1 flex items-center gap-1">
-                        <AlertCircle className="w-3 h-3" /> {errors.phone}
+                      <p id="phone-error" className="text-xs text-red-700 mt-1 flex items-center gap-1">
+                        <AlertCircle className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+                        <span>{errors.phone}</span>
                       </p>
                     )}
                   </div>
@@ -310,73 +327,68 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ preFillData }) =
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="suburb" className="block text-xs font-semibold text-[#0D1929] mb-1">
-                      Adelaide Suburb / Precinct <span className="text-red-500">*</span>
+                      Adelaide Suburb / Area <span className="text-red-600">*</span>
                     </label>
                     <select
                       id="suburb"
                       name="suburb"
                       value={formData.suburb}
                       onChange={handleChange}
-                      className="w-full px-3.5 py-2.5 text-sm rounded-md border border-[#E8E4DA] bg-[#FAF8F5] text-[#0D1929] focus:outline-none focus:ring-2 focus:ring-[#345C49]/40"
+                      className="w-full px-3.5 py-2.5 text-sm rounded-md border border-[#E8E4DA] bg-[#FAF8F5] text-[#0D1929] focus:outline-none focus:ring-2 focus:ring-[#345C49]/50"
                     >
-                      <option value="Adelaide CBD (East End / West End / Central)">Adelaide CBD (East End / West End / Central)</option>
-                      <option value="North Adelaide (O'Connell / Melbourne St)">North Adelaide (O'Connell / Melbourne St)</option>
-                      <option value="Norwood & The Parade">Norwood & The Parade</option>
-                      <option value="Glenelg & Coastal Suburbs">Glenelg & Coastal Suburbs</option>
-                      <option value="Unley, Hyde Park & Goodwood">Unley, Hyde Park & Goodwood</option>
-                      <option value="Bowden, Brompton & Hindmarsh">Bowden, Brompton & Hindmarsh</option>
-                      <option value="Prospect & North Suburban">Prospect & North Suburban</option>
-                      <option value="Adelaide Hills (Stirling, Crafers, Hahndorf)">Adelaide Hills (Stirling, Crafers, Hahndorf)</option>
-                      <option value="Other South Australian Location">Other South Australian Location</option>
+                      <option value="Adelaide CBD">Adelaide CBD</option>
+                      <option value="North Adelaide">North Adelaide</option>
+                      <option value="Norwood & Eastern Suburbs">Norwood &amp; Eastern Suburbs</option>
+                      <option value="Unley & Goodwood">Unley &amp; Goodwood</option>
+                      <option value="Glenelg & Coastal">Glenelg &amp; Coastal</option>
+                      <option value="Adelaide Hills">Adelaide Hills</option>
+                      <option value="Other Greater Adelaide Area">Other Greater Adelaide Area</option>
                     </select>
                   </div>
 
                   <div>
                     <label htmlFor="venueType" className="block text-xs font-semibold text-[#0D1929] mb-1">
-                      Venue Type <span className="text-red-500">*</span>
+                      Venue Type <span className="text-red-600">*</span>
                     </label>
                     <select
                       id="venueType"
                       name="venueType"
                       value={formData.venueType}
                       onChange={handleChange}
-                      className="w-full px-3.5 py-2.5 text-sm rounded-md border border-[#E8E4DA] bg-[#FAF8F5] text-[#0D1929] focus:outline-none focus:ring-2 focus:ring-[#345C49]/40"
+                      className="w-full px-3.5 py-2.5 text-sm rounded-md border border-[#E8E4DA] bg-[#FAF8F5] text-[#0D1929] focus:outline-none focus:ring-2 focus:ring-[#345C49]/50"
                     >
                       <option value="Café / Specialty Coffee">Café / Specialty Coffee</option>
                       <option value="Casual or Fine Dining Restaurant">Casual or Fine Dining Restaurant</option>
                       <option value="Wine Bar / Bistro">Wine Bar / Bistro</option>
-                      <option value="Artisan Bakery / Patisserie">Artisan Bakery / Patisserie</option>
+                      <option value="Bakery / Patisserie">Bakery / Patisserie</option>
                       <option value="Pub / Gastropub">Pub / Gastropub</option>
-                      <option value="Cellar Door / Winery Restaurant">Cellar Door / Winery Restaurant</option>
                     </select>
                   </div>
                 </div>
 
-                {/* Primary Challenge & Website/IG */}
+                {/* Focus Area & Website */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="primaryChallenge" className="block text-xs font-semibold text-[#0D1929] mb-1">
-                      Primary Strategic Focus <span className="text-red-500">*</span>
+                      Primary Focus Area <span className="text-red-600">*</span>
                     </label>
                     <select
                       id="primaryChallenge"
                       name="primaryChallenge"
                       value={formData.primaryChallenge}
                       onChange={handleChange}
-                      className="w-full px-3.5 py-2.5 text-sm rounded-md border border-[#E8E4DA] bg-[#FAF8F5] text-[#0D1929] focus:outline-none focus:ring-2 focus:ring-[#345C49]/40"
+                      className="w-full px-3.5 py-2.5 text-sm rounded-md border border-[#E8E4DA] bg-[#FAF8F5] text-[#0D1929] focus:outline-none focus:ring-2 focus:ring-[#345C49]/50"
                     >
-                      <option value="Direct Table Bookings & Reduced Aggregator Fees">Direct Table Bookings & Reduced Aggregator Fees</option>
-                      <option value="Google Maps Local 3-Pack Dominance">Google Maps Local 3-Pack Dominance</option>
-                      <option value="Guest Retention & Midweek Covers">Guest Retention & Midweek Covers</option>
-                      <option value="Hyper-Local Paid Social Meta Ads">Hyper-Local Paid Social Meta Ads</option>
-                      <option value="POS Attribution & Margin Analytics">POS Attribution & Margin Analytics</option>
-                      <option value="Full Complete Digital Health Audit">Full Complete Digital Health Audit</option>
+                      <option value="Digital Marketing Audits">Digital Marketing Audits</option>
+                      <option value="Local SEO">Local SEO</option>
+                      <option value="Customer Retention">Customer Retention</option>
+                      <option value="Marketing Analytics">Marketing Analytics</option>
                     </select>
                   </div>
 
                   <div>
                     <label htmlFor="websiteOrInstagram" className="block text-xs font-semibold text-[#0D1929] mb-1">
-                      Website URL or Instagram Handle (Optional)
+                      Website or Instagram Handle (Optional)
                     </label>
                     <input
                       type="text"
@@ -384,8 +396,8 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ preFillData }) =
                       name="websiteOrInstagram"
                       value={formData.websiteOrInstagram}
                       onChange={handleChange}
-                      placeholder="e.g. www.venue.com.au or @venue"
-                      className="w-full px-3.5 py-2.5 text-sm rounded-md border border-[#E8E4DA] bg-[#FAF8F5] text-[#0D1929] focus:outline-none focus:ring-2 focus:ring-[#345C49]/40"
+                      placeholder="e.g. @norwoodcorner"
+                      className="w-full px-3.5 py-2.5 text-sm rounded-md border border-[#E8E4DA] bg-[#FAF8F5] text-[#0D1929] focus:outline-none focus:ring-2 focus:ring-[#345C49]/50"
                     />
                   </div>
                 </div>
@@ -393,7 +405,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ preFillData }) =
                 {/* Notes */}
                 <div>
                   <label htmlFor="notes" className="block text-xs font-semibold text-[#0D1929] mb-1">
-                    Specific Questions, POS System, or Booking Platform (Optional)
+                    Brief Notes or Questions (Optional)
                   </label>
                   <textarea
                     id="notes"
@@ -401,30 +413,19 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ preFillData }) =
                     rows={3}
                     value={formData.notes}
                     onChange={handleChange}
-                    placeholder="Tell us any specific challenges (e.g. using SevenRooms, struggling with Tuesday night covers, heavy UberEats reliance)..."
-                    className="w-full px-3.5 py-2.5 text-sm rounded-md border border-[#E8E4DA] bg-[#FAF8F5] text-[#0D1929] focus:outline-none focus:ring-2 focus:ring-[#345C49]/40"
+                    placeholder="Share any goals or questions about your venue's online visibility, retention, or analytics..."
+                    className="w-full px-3.5 py-2.5 text-sm rounded-md border border-[#E8E4DA] bg-[#FAF8F5] text-[#0D1929] focus:outline-none focus:ring-2 focus:ring-[#345C49]/50"
                   />
                 </div>
 
-                {/* Submit Button */}
                 <div className="pt-2">
                   <button
                     type="submit"
-                    disabled={isSubmitting}
-                    className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 text-xs font-semibold uppercase tracking-wider text-[#FAF8F5] bg-[#0D1929] hover:bg-[#182A44] rounded-md transition-all shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#345C49] disabled:opacity-75 cursor-pointer"
+                    className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 text-xs font-semibold uppercase tracking-wider text-[#FAF8F5] bg-[#0D1929] hover:bg-[#182A44] rounded-md transition-colors shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#345C49] cursor-pointer"
                   >
-                    {isSubmitting ? (
-                      <span>Analyzing Venue Data...</span>
-                    ) : (
-                      <>
-                        <span>Submit Digital Audit Request</span>
-                        <ArrowRight className="w-4 h-4 text-[#345C49]" />
-                      </>
-                    )}
+                    <span>Preview Audit Enquiry Submission</span>
+                    <ArrowRight className="w-4 h-4 text-[#84B39A]" aria-hidden="true" />
                   </button>
-                  <p className="text-center text-[11px] text-[#0D1929]/55 mt-2">
-                    Complimentary for Adelaide hospitality businesses. Zero spam. No obligations.
-                  </p>
                 </div>
               </form>
             )}
