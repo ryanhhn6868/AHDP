@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateAuditForm, AuditRequestFormData } from './auditCalculator';
-import { parseHashRoute, ROUTES } from './routing';
+import { parsePathnameRoute, getRouteHref, normalizeBasePath, ROUTES } from './routing';
 import { trackPageView, trackAuditCtaClick } from './analytics';
 
 test('validateAuditForm: returns errors on empty required fields', () => {
@@ -56,16 +56,48 @@ test('validateAuditForm: approves valid Adelaide venue enquiry', () => {
   assert.equal(Object.keys(validation.errors).length, 0);
 });
 
-test('parseHashRoute: resolves all Part A/B routes and falls back to home', () => {
-  assert.equal(parseHashRoute(''), 'home');
-  assert.equal(parseHashRoute('#/'), 'home');
-  assert.equal(parseHashRoute('#/about'), 'about');
-  assert.equal(parseHashRoute('#/services'), 'services');
-  assert.equal(parseHashRoute('#/sample-audit'), 'sample-audit');
-  assert.equal(parseHashRoute('#/insights'), 'insights');
-  assert.equal(parseHashRoute('#/contact'), 'contact');
-  assert.equal(parseHashRoute('#/unknown-page'), 'home');
+test('parsePathnameRoute: resolves root and GitHub Pages subfolder paths cleanly', () => {
+  assert.equal(normalizeBasePath(undefined), '/');
+  assert.equal(normalizeBasePath('./'), '/');
+  assert.equal(normalizeBasePath('/ahdp'), '/ahdp/');
+  assert.equal(normalizeBasePath('/ahdp/'), '/ahdp/');
+
+  // Root hosting
+  assert.equal(parsePathnameRoute('/', '/'), 'home');
+  assert.equal(parsePathnameRoute('/about', '/'), 'about');
+  assert.equal(parsePathnameRoute('/about/', '/'), 'about');
+  assert.equal(parsePathnameRoute('/services', '/'), 'services');
+  assert.equal(parsePathnameRoute('/sample-audit', '/'), 'sample-audit');
+  assert.equal(parsePathnameRoute('/insights', '/'), 'insights');
+  assert.equal(parsePathnameRoute('/contact', '/'), 'contact');
+  assert.equal(parsePathnameRoute('/unknown-page', '/'), 'home');
+
+  // GitHub Pages subfolder hosting (/ahdp/)
+  assert.equal(parsePathnameRoute('/ahdp', '/ahdp/'), 'home');
+  assert.equal(parsePathnameRoute('/ahdp/', '/ahdp/'), 'home');
+  assert.equal(parsePathnameRoute('/ahdp/services', '/ahdp/'), 'services');
+  assert.equal(parsePathnameRoute('/ahdp/services/', '/ahdp/'), 'services');
+  assert.equal(parsePathnameRoute('/ahdp/sample-audit/', '/ahdp/'), 'sample-audit');
+  assert.equal(parsePathnameRoute('/ahdp/unknown', '/ahdp/'), 'home');
+
+  // Skip-link fragment must never change the resolved route
+  assert.equal(parsePathnameRoute('/services', '/', '#main-content'), 'services');
+  assert.equal(parsePathnameRoute('/ahdp/contact/', '/ahdp/', '#main-content'), 'contact');
+
+  // Legacy #/ hashes still resolve when on root
+  assert.equal(parsePathnameRoute('/ahdp/', '/ahdp/', '#/insights'), 'insights');
+
   assert.ok(ROUTES.services.title.includes('Services'));
+});
+
+test('getRouteHref: builds clean URLs for both root and subfolder bases', () => {
+  assert.equal(getRouteHref('home', '/'), '/');
+  assert.equal(getRouteHref('about', '/'), '/about');
+  assert.equal(getRouteHref('sample-audit', '/'), '/sample-audit');
+
+  assert.equal(getRouteHref('home', '/ahdp/'), '/ahdp/');
+  assert.equal(getRouteHref('services', '/ahdp/'), '/ahdp/services');
+  assert.equal(getRouteHref('contact', '/ahdp/'), '/ahdp/contact');
 });
 
 test('analytics helpers: return structured payloads safely in non-DOM environment', () => {

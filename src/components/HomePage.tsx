@@ -9,7 +9,7 @@ import {
   BookOpen,
 } from 'lucide-react';
 import { Hero } from './Hero';
-import { PageRoute, ROUTES } from '../utils/routing';
+import { PageRoute, getRouteHref } from '../utils/routing';
 import { trackAuditCtaClick } from '../utils/analytics';
 
 interface HomePageProps {
@@ -103,7 +103,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               </p>
             </div>
             <a
-              href={ROUTES.services.hash}
+              href={getRouteHref('services')}
               onClick={(e) => {
                 e.preventDefault();
                 onNavigate('services');
@@ -153,7 +153,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                     </ul>
 
                     <a
-                      href={ROUTES.services.hash}
+                      href={getRouteHref('services')}
                       onClick={(e) => {
                         e.preventDefault();
                         onNavigate('services');
@@ -184,7 +184,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               </h2>
             </div>
             <a
-              href={ROUTES.about.hash}
+              href={getRouteHref('about')}
               onClick={(e) => {
                 e.preventDefault();
                 onNavigate('about');
@@ -233,7 +233,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               </div>
               <div>
                 <a
-                  href={ROUTES['sample-audit'].hash}
+                  href={getRouteHref('sample-audit')}
                   onClick={(e) => {
                     e.preventDefault();
                     onNavigate('sample-audit');
@@ -261,7 +261,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               </div>
               <div>
                 <a
-                  href={ROUTES.insights.hash}
+                  href={getRouteHref('insights')}
                   onClick={(e) => {
                     e.preventDefault();
                     onNavigate('insights');
@@ -289,7 +289,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               </p>
             </div>
             <a
-              href={ROUTES.contact.hash}
+              href={getRouteHref('contact')}
               onClick={(e) => handleCtaClick(e, 'home_footer_band')}
               data-cta="request-digital-audit"
               className="inline-flex items-center justify-center gap-2 px-7 py-4 text-xs font-semibold uppercase tracking-wider text-[#0D1929] bg-[#FAF8F5] hover:bg-[#EFECE3] rounded-md transition-colors whitespace-nowrap shrink-0 shadow-sm"

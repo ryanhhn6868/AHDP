@@ -7,49 +7,80 @@ import { SampleAuditPage } from './components/SampleAuditPage';
 import { InsightsPage } from './components/InsightsPage';
 import { ContactSection } from './components/ContactSection';
 import { Footer } from './components/Footer';
-import { PageRoute, ROUTES, parseHashRoute, getRouteHash } from './utils/routing';
-import { trackPageView } from './utils/analytics';
+import {
+  PageRoute,
+  parsePathnameRoute,
+  getRouteHref,
+  applyRouteMetadata,
+} from './utils/routing';
 
 export default function App() {
   const [currentRoute, setCurrentRoute] = useState<PageRoute>(() =>
-    typeof window !== 'undefined' ? parseHashRoute(window.location.hash) : 'home'
+    typeof window !== 'undefined'
+      ? parsePathnameRoute(window.location.pathname, undefined, window.location.hash)
+      : 'home'
   );
   const [preFillFocus, setPreFillFocus] = useState<string | null>(null);
 
-  const navigateTo = useCallback((route: PageRoute) => {
-    const targetHash = getRouteHash(route);
-    if (window.location.hash !== targetHash) {
-      window.location.hash = targetHash;
-    } else {
+  const navigateTo = useCallback(
+    (route: PageRoute) => {
+      const targetHref = getRouteHref(route);
+      const currentPathNormalized = window.location.pathname.replace(/\/+$/, '') || '/';
+      const targetPathNormalized = targetHref.replace(/\/+$/, '') || '/';
+
+      // Update <title> and meta description synchronously BEFORE pushState so GTM's
+      // History Change trigger reads the destination page's metadata immediately.
+      applyRouteMetadata(route);
+
+      if (currentPathNormalized !== targetPathNormalized) {
+        window.history.pushState(null, '', targetHref);
+      }
+
       setCurrentRoute(route);
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+    []
+  );
+
+  // Sync metadata on initial load and upgrade legacy #/ URLs if present
+  useEffect(() => {
+    const initialRoute = parsePathnameRoute(
+      window.location.pathname,
+      undefined,
+      window.location.hash
+    );
+    applyRouteMetadata(initialRoute);
+
+    if (window.location.hash.startsWith('#/')) {
+      window.history.replaceState(null, '', getRouteHref(initialRoute));
     }
   }, []);
 
-  // Listen to browser back/forward and manual hash edits / direct refreshes
+  // Listen to browser back/forward navigation
   useEffect(() => {
-    const handleHashChange = () => {
-      const nextRoute = parseHashRoute(window.location.hash);
+    const handlePopState = () => {
+      const nextRoute = parsePathnameRoute(
+        window.location.pathname,
+        undefined,
+        window.location.hash
+      );
+      applyRouteMetadata(nextRoute);
       setCurrentRoute(nextRoute);
       window.scrollTo({ top: 0, behavior: 'auto' });
     };
 
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  // Update SEO document title, meta description, and trigger GA4/GTM page_view on route change
-  useEffect(() => {
-    const meta = ROUTES[currentRoute];
-    document.title = meta.title;
-
-    const descriptionTag = document.querySelector('meta[name="description"]');
-    if (descriptionTag) {
-      descriptionTag.setAttribute('content', meta.description);
+  const handleSkipToMain = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    const mainEl = document.getElementById('main-content');
+    if (mainEl) {
+      mainEl.focus({ preventScroll: true });
+      mainEl.scrollIntoView({ behavior: 'smooth' });
     }
-
-    trackPageView(meta.title, meta.virtualPath);
-  }, [currentRoute]);
+  };
 
   const handleSelectServiceForAudit = (serviceName: string) => {
     setPreFillFocus(serviceName);
@@ -61,6 +92,7 @@ export default function App() {
       {/* Keyboard Skip Link for Accessibility */}
       <a
         href="#main-content"
+        onClick={handleSkipToMain}
         className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:px-4 focus:py-2 focus:bg-[#0D1929] focus:text-[#FAF8F5] focus:rounded-md focus:text-sm focus:font-semibold"
       >
         Skip to main content

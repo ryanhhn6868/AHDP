@@ -3,7 +3,7 @@ import { ShieldCheck, Compass, BarChart2, ArrowUpRight, ArrowRight } from 'lucid
 import diningImage from '@/src/assets/images/adelaide_dining_atmosphere_1793612001176.jpg';
 import analyticsImage from '@/src/assets/images/hospitality_analytics_tablet_1793612003100.jpg';
 import exteriorImage from '@/src/assets/images/adelaide_cafe_exterior_1793612002051.jpg';
-import { PageRoute, ROUTES } from '../utils/routing';
+import { PageRoute, getRouteHref } from '../utils/routing';
 import { trackAuditCtaClick } from '../utils/analytics';
 
 interface AboutUsProps {
@@ -218,7 +218,7 @@ export const AboutUs: React.FC<AboutUsProps> = ({ onNavigate }) => {
             </div>
             <div className="flex flex-wrap items-center gap-4 shrink-0">
               <a
-                href={ROUTES['sample-audit'].hash}
+                href={getRouteHref('sample-audit')}
                 onClick={(e) => {
                   e.preventDefault();
                   onNavigate('sample-audit');
@@ -229,7 +229,7 @@ export const AboutUs: React.FC<AboutUsProps> = ({ onNavigate }) => {
                 <ArrowRight className="w-4 h-4" aria-hidden="true" />
               </a>
               <a
-                href={ROUTES.contact.hash}
+                href={getRouteHref('contact')}
                 onClick={(e) => {
                   e.preventDefault();
                   trackAuditCtaClick('about_page');

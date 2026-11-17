@@ -1,7 +1,7 @@
 import React from 'react';
 import { ArrowUpRight, CheckCircle2, ArrowRight } from 'lucide-react';
 import heroImage from '@/src/assets/images/hero_adelaide_hospitality_1793612001294.jpg';
-import { PageRoute, ROUTES } from '../utils/routing';
+import { PageRoute, getRouteHref } from '../utils/routing';
 import { trackAuditCtaClick } from '../utils/analytics';
 
 interface HeroProps {
@@ -64,7 +64,7 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
             {/* Primary CTA */}
             <div className="pt-4 flex flex-col sm:flex-row items-start sm:items-center gap-5">
               <a
-                href={ROUTES.contact.hash}
+                href={getRouteHref('contact')}
                 onClick={handleRequestAudit}
                 data-cta="request-digital-audit"
                 className="inline-flex items-center justify-center gap-3 px-7 py-4 text-sm font-semibold uppercase tracking-wider text-[#FAF8F5] bg-[#0D1929] hover:bg-[#182A44] rounded-md transition-colors shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#345C49] group whitespace-nowrap shrink-0"
@@ -74,7 +74,7 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
               </a>
 
               <a
-                href={ROUTES.services.hash}
+                href={getRouteHref('services')}
                 onClick={(e) => {
                   e.preventDefault();
                   onNavigate('services');

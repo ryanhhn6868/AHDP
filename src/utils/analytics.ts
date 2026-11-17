@@ -23,13 +23,18 @@ function pushToDataLayer(payload: Record<string, unknown>): void {
   window.dataLayer.push(payload);
 }
 
-export function trackPageView(pageTitle: string, virtualPath: string): PageViewPayload {
+/**
+ *Note: Initial page_view and History API route changes are handled automatically
+ *by GTM container GTM-KD88TR26 (gtm.js on load + gtm.historyChange-v2 on pushState/popstate).
+ *Only call this helper manually if an explicit standalone dataLayer event is needed.
+ */
+export function trackPageView(pageTitle: string, pagePath: string): PageViewPayload {
   const pageLocation =
-    typeof window !== 'undefined' ? window.location.href : `https://ahdp.local${virtualPath}`;
+    typeof window !== 'undefined' ? window.location.href : `https://ahdp.local${pagePath}`;
 
   const payload: PageViewPayload = {
     page_title: pageTitle,
-    page_path: virtualPath,
+    page_path: pagePath,
     page_location: pageLocation,
   };
 
@@ -37,10 +42,6 @@ export function trackPageView(pageTitle: string, virtualPath: string): PageViewP
     event: 'page_view',
     ...payload,
   });
-
-  if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
-    window.gtag('event', 'page_view', payload);
-  }
 
   return payload;
 }
@@ -57,10 +58,6 @@ export function trackAuditCtaClick(ctaLocation: string): AuditCtaPayload {
     ...payload,
   });
 
-  if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
-    window.gtag('event', 'request_digital_audit_click', payload);
-  }
-
   return payload;
 }
 
@@ -75,8 +72,4 @@ export function trackAuditFormDemoSubmit(venueType: string, strategicFocus: stri
     event: 'audit_enquiry_submit_demo',
     ...payload,
   });
-
-  if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
-    window.gtag('event', 'audit_enquiry_submit_demo', payload);
-  }
 }

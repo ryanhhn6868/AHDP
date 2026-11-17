@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowUp } from 'lucide-react';
-import { NAV_ORDER, PageRoute, ROUTES } from '../utils/routing';
+import { NAV_ORDER, PageRoute, ROUTES, getRouteHref } from '../utils/routing';
 
 interface FooterProps {
   onNavigate: (route: PageRoute) => void;
@@ -46,7 +46,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                 return (
                   <li key={routeKey}>
                     <a
-                      href={routeInfo.hash}
+                      href={getRouteHref(routeKey)}
                       onClick={(e) => {
                         e.preventDefault();
                         onNavigate(routeKey);

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Menu, X, ArrowUpRight } from 'lucide-react';
-import { NAV_ORDER, PageRoute, ROUTES } from '../utils/routing';
+import { NAV_ORDER, PageRoute, ROUTES, getRouteHref } from '../utils/routing';
 import { trackAuditCtaClick } from '../utils/analytics';
 
 interface NavbarProps {
@@ -29,7 +29,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
         <div className="flex items-center justify-between gap-6 lg:gap-8 h-20">
           {/* Zone 1: Brand Wordmark */}
           <a
-            href={ROUTES.home.hash}
+            href={getRouteHref('home')}
             onClick={(e) => handleLinkClick(e, 'home')}
             className="flex items-center gap-3 font-serif text-xl sm:text-2xl font-bold tracking-tight text-[#0D1929] whitespace-nowrap shrink-0 hover:text-[#345C49] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#345C49] rounded-sm"
             aria-label="Adelaide Hospitality Digital Partners Home"
@@ -48,7 +48,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
               return (
                 <a
                   key={routeKey}
-                  href={routeInfo.hash}
+                  href={getRouteHref(routeKey)}
                   onClick={(e) => handleLinkClick(e, routeKey)}
                   aria-current={isActive ? 'page' : undefined}
                   className={`transition-colors whitespace-nowrap shrink-0 py-1.5 border-b-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#345C49] rounded-xs ${
@@ -66,7 +66,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
           {/* Zone 3: Primary CTA */}
           <div className="hidden sm:flex items-center gap-4 shrink-0">
             <a
-              href={ROUTES.contact.hash}
+              href={getRouteHref('contact')}
               onClick={(e) => {
                 e.preventDefault();
                 handleCtaClick();
@@ -104,7 +104,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
               return (
                 <a
                   key={routeKey}
-                  href={routeInfo.hash}
+                  href={getRouteHref(routeKey)}
                   onClick={(e) => handleLinkClick(e, routeKey)}
                   aria-current={isActive ? 'page' : undefined}
                   className={`px-3 py-2.5 text-base font-medium rounded-md transition-colors ${
@@ -119,7 +119,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
             })}
             <div className="pt-3">
               <a
-                href={ROUTES.contact.hash}
+                href={getRouteHref('contact')}
                 onClick={(e) => {
                   e.preventDefault();
                   handleCtaClick();

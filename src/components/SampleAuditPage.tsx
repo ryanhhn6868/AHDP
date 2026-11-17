@@ -1,7 +1,7 @@
 import React from 'react';
 import { FileCheck2, MapPin, Smartphone, Users, BarChart3, ArrowUpRight, ArrowRight, Info } from 'lucide-react';
 import analyticsImage from '@/src/assets/images/hospitality_analytics_tablet_1793612003100.jpg';
-import { PageRoute, ROUTES } from '../utils/routing';
+import { PageRoute, getRouteHref } from '../utils/routing';
 import { trackAuditCtaClick } from '../utils/analytics';
 
 interface SampleAuditPageProps {
@@ -232,7 +232,7 @@ export const SampleAuditPage: React.FC<SampleAuditPageProps> = ({ onNavigate }) 
             </div>
             <div className="flex flex-wrap items-center gap-4 shrink-0">
               <a
-                href={ROUTES.services.hash}
+                href={getRouteHref('services')}
                 onClick={(e) => {
                   e.preventDefault();
                   onNavigate('services');
@@ -243,7 +243,7 @@ export const SampleAuditPage: React.FC<SampleAuditPageProps> = ({ onNavigate }) 
                 <ArrowRight className="w-4 h-4" aria-hidden="true" />
               </a>
               <a
-                href={ROUTES.contact.hash}
+                href={getRouteHref('contact')}
                 onClick={(e) => {
                   e.preventDefault();
                   trackAuditCtaClick('sample_audit_page');

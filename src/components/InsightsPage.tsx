@@ -3,7 +3,7 @@ import { BookOpen, ArrowRight, ArrowUpRight, ChevronLeft } from 'lucide-react';
 import exteriorImage from '@/src/assets/images/adelaide_cafe_exterior_1793612002051.jpg';
 import diningImage from '@/src/assets/images/adelaide_dining_atmosphere_1793612001176.jpg';
 import analyticsImage from '@/src/assets/images/hospitality_analytics_tablet_1793612003100.jpg';
-import { PageRoute, ROUTES } from '../utils/routing';
+import { PageRoute, getRouteHref } from '../utils/routing';
 import { trackAuditCtaClick } from '../utils/analytics';
 
 interface InsightsPageProps {
@@ -148,7 +148,7 @@ export const InsightsPage: React.FC<InsightsPageProps> = ({ onNavigate }) => {
                       Want us to review these areas on your venue’s website?
                     </div>
                     <a
-                      href={ROUTES.contact.hash}
+                      href={getRouteHref('contact')}
                       onClick={(e) => {
                         e.preventDefault();
                         trackAuditCtaClick(`insight_${activeArticle.id}`);

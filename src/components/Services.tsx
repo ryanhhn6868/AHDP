@@ -1,6 +1,6 @@
 import React from 'react';
 import { ClipboardCheck, MapPin, Users, BarChart3, Check, ArrowRight, ArrowUpRight } from 'lucide-react';
-import { PageRoute, ROUTES } from '../utils/routing';
+import { PageRoute, getRouteHref } from '../utils/routing';
 import { trackAuditCtaClick } from '../utils/analytics';
 
 interface ServicesProps {
@@ -181,7 +181,7 @@ export const Services: React.FC<ServicesProps> = ({ onNavigate, onSelectServiceF
             </div>
             <div className="flex flex-wrap items-center gap-4 shrink-0">
               <a
-                href={ROUTES['sample-audit'].hash}
+                href={getRouteHref('sample-audit')}
                 onClick={(e) => {
                   e.preventDefault();
                   onNavigate('sample-audit');
@@ -192,7 +192,7 @@ export const Services: React.FC<ServicesProps> = ({ onNavigate, onSelectServiceF
                 <ArrowRight className="w-4 h-4" aria-hidden="true" />
               </a>
               <a
-                href={ROUTES.contact.hash}
+                href={getRouteHref('contact')}
                 onClick={(e) => {
                   e.preventDefault();
                   trackAuditCtaClick('services_footer_band');
